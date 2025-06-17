@@ -104,7 +104,7 @@ BOOL CTestCSCDirWatcherDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	m_dir_watcher.init(this);
-	m_dir_watcher.add(_T("D:\\temp"), false);
+	m_dir_watcher.add(_T("D:\\temp"), true);
 	m_dir_watcher.add(_T("D:\\temp1"), false);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -177,7 +177,7 @@ void CTestCSCDirWatcherDlg::OnBnClickedCancel()
 
 LRESULT CTestCSCDirWatcherDlg::on_message_CSCDirWatcher(WPARAM wParam, LPARAM lParam)
 {
-	CSCDirWatcherMessage* msg = reinterpret_cast<CSCDirWatcherMessage*>(wParam);
+	CSCDirWatcherMessage* msg = (CSCDirWatcherMessage*)wParam;
 	TRACE(_T("action: %d, path0: %s, path1: %s\n"), msg->action, msg->path0, msg->path1);
 	return 0;
 }
