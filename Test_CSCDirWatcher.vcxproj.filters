@@ -13,7 +13,13 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="SCDirWatcher">
+    <Filter Include="Common">
+      <UniqueIdentifier>{b4a4d1c7-a669-4209-a434-fb7d635a49fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\CVtListCtrlEx">
+      <UniqueIdentifier>{e1dea081-42e8-4289-bdf8-27b79ed70601}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\SCDirWatcher">
       <UniqueIdentifier>{fc1538e8-4d92-490b-b5c1-b782b1d2ce53}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -40,16 +46,49 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\file_system\SCDirWatcher\ReadDirectoryChangesPrivate.h">
-      <Filter>SCDirWatcher</Filter>
+      <Filter>Common\SCDirWatcher</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\file_system\SCDirWatcher\SCDirWatcher.h">
-      <Filter>SCDirWatcher</Filter>
+      <Filter>Common\SCDirWatcher</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\file_system\SCDirWatcher\ThreadSafeQueue.h">
-      <Filter>SCDirWatcher</Filter>
+      <Filter>Common\SCDirWatcher</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\file_system\SCDirWatcher\ReadDirectoryChanges.h">
-      <Filter>SCDirWatcher</Filter>
+      <Filter>Common\SCDirWatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\ResizeCtrl.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\colors.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\Functions.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\GdiplusBitmap.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\MemoryDC.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\CListCtrl\CVtListCtrlEx\HeaderCtrlEx.h">
+      <Filter>Common\CVtListCtrlEx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\CListCtrl\CVtListCtrlEx\list_data.h">
+      <Filter>Common\CVtListCtrlEx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\CListCtrl\CVtListCtrlEx\VtListCtrlEx.h">
+      <Filter>Common\CVtListCtrlEx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\CEdit\SCEdit\SCEdit.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\CButton\GdiButton\GdiButton.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\system\ShellImageList\ShellImageList.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -63,13 +102,43 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\file_system\SCDirWatcher\SCDirWatcher.cpp">
-      <Filter>SCDirWatcher</Filter>
+      <Filter>Common\SCDirWatcher</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\file_system\SCDirWatcher\ReadDirectoryChanges.cpp">
-      <Filter>SCDirWatcher</Filter>
+      <Filter>Common\SCDirWatcher</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\file_system\SCDirWatcher\ReadDirectoryChangesPrivate.cpp">
-      <Filter>SCDirWatcher</Filter>
+      <Filter>Common\SCDirWatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\ResizeCtrl.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\colors.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\Functions.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\GdiplusBitmap.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\CListCtrl\CVtListCtrlEx\list_data.cpp">
+      <Filter>Common\CVtListCtrlEx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\CListCtrl\CVtListCtrlEx\VtListCtrlEx.cpp">
+      <Filter>Common\CVtListCtrlEx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\CListCtrl\CVtListCtrlEx\HeaderCtrlEx.cpp">
+      <Filter>Common\CVtListCtrlEx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\CEdit\SCEdit\SCEdit.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\CButton\GdiButton\GdiButton.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\system\ShellImageList\ShellImageList.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,5 +155,10 @@
     <Image Include="res\Test_CSCDirWatcher.ico">
       <Filter>리소스 파일</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\Common\CListCtrl\CVtListCtrlEx\readme.txt">
+      <Filter>Common\CVtListCtrlEx</Filter>
+    </Text>
   </ItemGroup>
 </Project>

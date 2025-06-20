@@ -4,7 +4,9 @@
 
 #pragma once
 
+#include "../../Common/ResizeCtrl.h"
 #include "../../Common/file_system/SCDirWatcher/SCDirWatcher.h"
+#include "../../Common/CListCtrl/CVtListCtrlEx/VtListCtrlEx.h"
 
 // CTestCSCDirWatcherDlg 대화 상자
 class CTestCSCDirWatcherDlg : public CDialogEx
@@ -24,7 +26,22 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 
 protected:
+	enum TIMER_ID
+	{
+		timer_watching_status,
+	};
+
+	enum LIST_COLUMN_ID
+	{
+		col_folder = 0,
+		col_status,
+		col_recent_action,
+	};
+
+	CResizeCtrl			m_resize;
 	CSCDirWatcher		m_dir_watcher;
+
+	void				init_list();
 
 // 구현입니다.
 protected:
@@ -39,4 +56,9 @@ protected:
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
+	CVtListCtrlEx m_list;
+	afx_msg void OnDropFiles(HDROP hDropInfo);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 };

@@ -8,6 +8,8 @@
 #include "Test_CSCDirWatcherDlg.h"
 #include "afxdialogex.h"
 
+#include "../../Common/Functions.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -59,6 +61,7 @@ CTestCSCDirWatcherDlg::CTestCSCDirWatcherDlg(CWnd* pParent /*=nullptr*/)
 void CTestCSCDirWatcherDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_LIST, m_list);
 }
 
 BEGIN_MESSAGE_MAP(CTestCSCDirWatcherDlg, CDialogEx)
@@ -68,6 +71,9 @@ BEGIN_MESSAGE_MAP(CTestCSCDirWatcherDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CTestCSCDirWatcherDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CTestCSCDirWatcherDlg::OnBnClickedCancel)
 	ON_REGISTERED_MESSAGE(Message_CSCDirWatcher, &CTestCSCDirWatcherDlg::on_message_CSCDirWatcher)
+	ON_WM_DROPFILES()
+	ON_WM_TIMER()
+	ON_WM_WINDOWPOSCHANGED()
 END_MESSAGE_MAP()
 
 
@@ -103,11 +109,39 @@ BOOL CTestCSCDirWatcherDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	m_resize.Create(this);
+	m_resize.Add(IDC_LIST, 0, 0, 100, 100);
+	m_resize.Add(IDOK, 100, 100, 0, 0);
+	m_resize.Add(IDCANCEL, 100, 100, 0, 0);
+
+	init_list();
+	std::deque<CString> dq_list;
+	get_registry_list(&theApp, _T("setting\\watching folders"), dq_list);
+	m_list.add_item(dq_list);
+
 	m_dir_watcher.init(this);
-	m_dir_watcher.add(_T("D:\\temp"), true);
-	m_dir_watcher.add(_T("D:\\temp1"), false);
+	m_dir_watcher.add(dq_list);
+
+	DragAcceptFiles();
+
+	RestoreWindowPosition(&theApp, this);
+
+	SetTimer(timer_watching_status, 1000, nullptr);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
+}
+
+void CTestCSCDirWatcherDlg::init_list()
+{
+	m_list.set_headings(_T("Watching Folder,400;Status,100;Recent Action,400"));
+	m_list.load_column_width(&theApp, _T("folder list"));
+	m_list.set_font_size(8);
+	m_list.set_header_height(22);
+	m_list.set_line_height(20);
+	m_list.allow_edit();
+	m_list.set_back_alternate_color();
+
+	m_list.set_text_on_empty(_T("변경을 모니터링 할 폴더를 drag&drop 하세요."));
 }
 
 void CTestCSCDirWatcherDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -163,21 +197,131 @@ HCURSOR CTestCSCDirWatcherDlg::OnQueryDragIcon()
 void CTestCSCDirWatcherDlg::OnBnClickedOk()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	//m_dir_watcher.stop(_T("D:\\temp"));
+	m_dir_watcher.stop();
+	/*
 	m_dir_watcher.stop_all();
 	//Sleep(2000);
 	m_dir_watcher.add(_T("D:\\test"), false); // Start watching the directory again
 	//CDialogEx::OnOK();
+	*/
 }
 
 void CTestCSCDirWatcherDlg::OnBnClickedCancel()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	m_list.save_column_width(&theApp, _T("folder list"));
+
 	CDialogEx::OnCancel();
 }
 
 LRESULT CTestCSCDirWatcherDlg::on_message_CSCDirWatcher(WPARAM wParam, LPARAM lParam)
 {
 	CSCDirWatcherMessage* msg = (CSCDirWatcherMessage*)wParam;
-	TRACE(_T("action: %d, path0: %s, path1: %s\n"), msg->action, msg->path0, msg->path1);
+
+	CString event_str;
+
+	if (msg->action == FILE_ACTION_RENAMED_NEW_NAME)
+		event_str.Format(_T("%s. from = %s, to = %s"), CSCDirWatcher::action_str(msg->action), msg->path1, msg->path0);
+	else
+		event_str.Format(_T("%s. path0 = %s"), CSCDirWatcher::action_str(msg->action), msg->path0);
+	TRACE(_T("%s\n"), event_str);
+
+	CString event_folder = get_part(msg->path0, fn_folder);
+
+	LVFINDINFO fi;
+	//memset(&fi, 0, sizeof(fi));
+	fi.flags = LVFI_STRING;
+	fi.psz = event_folder;
+	//int index = m_list.find(event_folder);// (&fi);
+	int index = m_list.FindItem(&fi);
+	m_list.set_text(index, col_recent_action, event_str);
+
 	return 0;
+}
+
+void CTestCSCDirWatcherDlg::OnDropFiles(HDROP hDropInfo)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	TCHAR sfile[MAX_PATH];
+
+	int count = DragQueryFile(hDropInfo, -1, sfile, MAX_PATH);
+
+	for (int i = 0; i < count; i++)
+	{
+		DragQueryFile(hDropInfo, i, sfile, MAX_PATH);
+		if (PathIsDirectory(sfile))
+		{
+			m_list.add_item(sfile);
+			m_dir_watcher.add(sfile, true);
+			add_registry(&theApp, _T("setting\\watching folders"), sfile);
+		}
+	}
+
+	CDialogEx::OnDropFiles(hDropInfo);
+}
+
+BOOL CTestCSCDirWatcherDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		switch (pMsg->wParam)
+		{
+			case VK_DELETE :
+				if (GetFocus() == &m_list)
+				{
+					std::deque<int> dq;
+					m_list.get_selected_items(&dq);
+					for (int i = dq.size() - 1; i >= 0; i--)
+					{
+						CString folder = m_list.get_text(dq[i], col_folder);
+						m_dir_watcher.stop(folder);
+						m_list.delete_item(dq[i]);
+					}
+				}
+				break;
+		}
+	}
+	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+void CTestCSCDirWatcherDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	if (nIDEvent == timer_watching_status)
+	{
+		for (int i = 0; i < m_list.size(); i++)
+		{
+			CString folder = m_list.get_text(i, 0);
+			if (folder.IsEmpty())
+				continue;
+
+			if (!PathFileExists(folder))
+			{
+				m_list.set_text(i, col_status, _T("not exist"));
+				m_list.set_text_color(i, -1, Gdiplus::Color::Red);
+				continue;
+			}
+			else if (PathIsDirectory(folder) == false)
+			{
+				m_list.set_text(i, col_status, _T("not directory"));
+				m_list.set_text_color(i, -1, Gdiplus::Color::Red);
+				continue;
+			}
+
+			m_list.set_text_color(i, -1, m_list.m_theme.cr_text);
+			m_dir_watcher.add(folder);
+			m_list.set_text(i, 1, _T("watching"), false);
+		}
+	}
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+void CTestCSCDirWatcherDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
+{
+	CDialogEx::OnWindowPosChanged(lpwndpos);
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	SaveWindowPosition(&theApp, this);
 }
